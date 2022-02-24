@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from dotenv import load_dotenv
@@ -43,13 +44,9 @@ def callback(response):
     access_token = json["access_token"]
     refresh_token = json["refresh_token"]
 
-    playlists = spotify_utils.get_playlists(access_token)
+    return redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
 
-    print(playlists)
-
-    return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists})
-
-def refresh_token(response):
+def refresh_token_request(response):
     refresh_token = response.GET["refresh_token"]
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
@@ -66,4 +63,19 @@ def refresh_token(response):
 
     access_token = json["access_token"]
 
-    return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token})
+    return redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
+
+
+def select(response):
+    if not "access_token" in response.GET or not "refresh_token" in response.GET:
+        return redirect('/')
+
+    access_token = response.GET["access_token"]
+    refresh_token = response.GET["refresh_token"]
+
+    if response.POST:
+        print(response.POST)
+        # do something
+
+    playlists = spotify_utils.get_playlists(access_token)
+    return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists})

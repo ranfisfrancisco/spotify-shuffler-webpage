@@ -5,4 +5,5 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("login", views.login, name="login"),
     path("callback", views.callback, name="callback"),
+    path("select", views.select, name="select"),
 ]

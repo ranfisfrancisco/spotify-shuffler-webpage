@@ -1,9 +1,18 @@
 <body>
     <h1>Select Playlists</h1>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <select name="playlists" id="playlists" multiple>
+            {% for playlist in playlists%}
+                <option value={{playlist.id}}>{{playlist.name}}</option>
+            {% endfor %}  
+        </select>
+
+        <input type="number"> 
+
+        <button>Queue!</button>
+    </form>
+
     
-    <ul>
-      {% for playlist in playlists%}
-            <li>{{playlist.name}}</li>
-      {% endfor %}  
-    </ul>
 </body>
