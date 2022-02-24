@@ -6,6 +6,7 @@ import requests
 import os
 import six
 import base64
+import spotipy
 from . import spotify_utils
 
 # Create your views here.
@@ -38,6 +39,9 @@ def callback(response):
 
     r = requests.post('https://accounts.spotify.com/api/token', data = {'code':code, 'redirect_uri': redirect_uri, 'grant_type': 'authorization_code'},
         headers=auth_header)
+
+    if r.status_code != 200:
+        return redirect('/')
     
     json = r.json()
 
@@ -59,6 +63,9 @@ def refresh_token_request(response):
     r = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type' : 'refresh_token', "refresh_token": refresh_token},
         headers=auth_header)
 
+    if r.status_code != 200:
+        return redirect('/')
+
     json = r.json()
 
     access_token = json["access_token"]
@@ -68,14 +75,36 @@ def refresh_token_request(response):
 
 def select(response):
     if not "access_token" in response.GET or not "refresh_token" in response.GET:
-        return redirect('/')
+        return redirect('login')
 
     access_token = response.GET["access_token"]
     refresh_token = response.GET["refresh_token"]
+    server_msg = "TEST"
 
-    if response.POST:
-        print(response.POST)
-        # do something
+    print(response.POST)
+    if "selected_playlists" in response.POST and "queue_limit" in response.POST:
+        selected_playlists = response.POST.getlist("selected_playlists")
+        queue_limit = response.POST["queue_limit"]
 
+        # TODO: HANDLE
+        queue_limit = int(queue_limit)
+
+        tracks = []
+
+        for playlist_id in selected_playlists:
+            tracks.extend(spotify_utils.get_tracks_from_playlist(access_token, playlist_id))
+
+        # Remove Duplicate Tracks based on URI
+        tracks = list({ track_data['track']['uri'] : track_data for track_data in tracks }.values())
+
+        print("-"*10, queue_limit)
+        try:
+            spotify_utils.queue_tracks(access_token, tracks, queue_limit)
+            server_msg = "Success!"
+        except spotipy.exceptions.SpotifyException:
+            server_msg = "ERROR: Please make sure a device is actively playing."
+        
+
+    
     playlists = spotify_utils.get_playlists(access_token)
-    return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists})
+    return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists, "server_msg": server_msg})
