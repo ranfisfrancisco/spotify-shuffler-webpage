@@ -67,9 +67,15 @@ def get_tracks_from_playlist(access_token, playlist_id):
 
 def queue_tracks(access_token, tracks, queue_limit):
     spotify_conn = spotipy.Spotify(auth=access_token)
-    print(tracks[0:1])
 
     for idx, track in enumerate(tracks):
         spotify_conn.add_to_queue(track['track']['uri'])
         if queue_limit is not None and idx + 1 >= queue_limit:
             break
+
+def get_recently_played(access_token):
+    spotify_conn = spotipy.Spotify(auth=access_token)
+    results = spotify_conn.current_user_recently_played(limit=50)
+    recent_track_list = results['items']
+
+    return recent_track_list

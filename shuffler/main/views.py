@@ -8,6 +8,7 @@ import six
 import base64
 import spotipy
 from . import spotify_utils
+from . import shuffler
 
 # Create your views here.
 
@@ -81,13 +82,14 @@ def select(response):
     refresh_token = response.GET["refresh_token"]
     server_msg = "TEST"
 
-    print(response.POST)
     if "selected_playlists" in response.POST and "queue_limit" in response.POST:
         selected_playlists = response.POST.getlist("selected_playlists")
         queue_limit = response.POST["queue_limit"]
 
         # TODO: HANDLE
         queue_limit = int(queue_limit)
+        if queue_limit == 0:
+            queue_limit = float("inf")
 
         tracks = []
 
@@ -97,14 +99,15 @@ def select(response):
         # Remove Duplicate Tracks based on URI
         tracks = list({ track_data['track']['uri'] : track_data for track_data in tracks }.values())
 
-        print("-"*10, queue_limit)
+        recent_tracks = spotify_utils.get_recently_played(access_token)
+
+        shuffled_queue = shuffler.Shuffler.shuffle(tracks, recent_tracks)
+
         try:
-            spotify_utils.queue_tracks(access_token, tracks, queue_limit)
+            spotify_utils.queue_tracks(access_token, shuffled_queue, queue_limit)
             server_msg = "Success!"
         except spotipy.exceptions.SpotifyException:
             server_msg = "ERROR: Please make sure a device is actively playing."
-        
-
     
     playlists = spotify_utils.get_playlists(access_token)
     return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists, "server_msg": server_msg})
