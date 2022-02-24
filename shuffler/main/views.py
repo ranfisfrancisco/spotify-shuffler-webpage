@@ -5,6 +5,7 @@ import requests
 import os
 import six
 import base64
+from . import spotify_utils
 
 # Create your views here.
 
@@ -41,5 +42,28 @@ def callback(response):
 
     access_token = json["access_token"]
     refresh_token = json["refresh_token"]
+
+    playlists = spotify_utils.get_playlists(access_token)
+
+    print(playlists)
+
+    return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists})
+
+def refresh_token(response):
+    refresh_token = response.GET["refresh_token"]
+    client_id = os.getenv("CLIENT_ID")
+    client_secret = os.getenv("CLIENT_SECRET")
+
+    auth_header = base64.b64encode(
+        six.text_type(client_id + ":" + client_secret).encode("ascii")
+    )
+    auth_header = {"Authorization": "Basic %s" % auth_header.decode("ascii")}
+        
+    r = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type' : 'refresh_token', "refresh_token": refresh_token},
+        headers=auth_header)
+
+    json = r.json()
+
+    access_token = json["access_token"]
 
     return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token})

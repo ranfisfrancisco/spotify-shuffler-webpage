@@ -1,3 +1,9 @@
 <body>
-    <h3>Select</h3>
+    <h1>Select Playlists</h1>
+    
+    <ul>
+      {% for playlist in playlists%}
+            <li>{{playlist.name}}</li>
+      {% endfor %}  
+    </ul>
 </body>
