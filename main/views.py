@@ -13,7 +13,7 @@ from . import shuffler
 # Create your views here.
 
 def index(response):
-    return render(response, "main/home.html", {})
+    return render(response, "main/login.html", {})
 
 def login(response):
     load_dotenv()
