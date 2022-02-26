@@ -12,23 +12,23 @@ from . import shuffler
 
 # Create your views here.
 
-def index(response):
-    return render(response, "main/login.html", {})
+def index(request):
+    return render(request, "main/login.html", {})
 
-def login(response):
+def login(request):
     load_dotenv()
     scope = 'user-library-read user-read-recently-played playlist-read-private streaming'
     url_scope = "%20".join(scope.split())
 
     return redirect(f'https://accounts.spotify.com/authorize?response_type=code&client_id={os.getenv("CLIENT_ID")}&scope={url_scope}&redirect_uri={os.getenv("REDIRECT_URI")}')
 
-def callback(response):
-    if not "code" in response.GET:
-        return index(response)
+def callback(request):
+    if not "code" in request.GET:
+        return index(request)
 
     load_dotenv()
 
-    code = response.GET["code"]
+    code = request.GET["code"]
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
     redirect_uri = os.getenv("REDIRECT_URI")
@@ -51,8 +51,8 @@ def callback(response):
 
     return redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
 
-def refresh_token_request(response):
-    refresh_token = response.GET["refresh_token"]
+def refresh_token_request(request):
+    refresh_token = request.GET["refresh_token"]
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
 
@@ -74,17 +74,17 @@ def refresh_token_request(response):
     return redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
 
 
-def select(response):
-    if not "access_token" in response.GET or not "refresh_token" in response.GET:
+def select(request):
+    if not "access_token" in request.GET or not "refresh_token" in request.GET:
         return redirect('login')
 
-    access_token = response.GET["access_token"]
-    refresh_token = response.GET["refresh_token"]
+    access_token = request.GET["access_token"]
+    refresh_token = request.GET["refresh_token"]
     server_msg = ""
 
-    if "selected_playlists" in response.POST and "queue_limit" in response.POST:
-        selected_playlists = response.POST.getlist("selected_playlists")
-        queue_limit = response.POST["queue_limit"]
+    if "selected_playlists" in request.POST and "queue_limit" in request.POST:
+        selected_playlists = request.POST.getlist("selected_playlists")
+        queue_limit = request.POST["queue_limit"]
 
         # TODO: HANDLE
         queue_limit = int(queue_limit)
@@ -110,4 +110,4 @@ def select(response):
             server_msg = "ERROR: Please make sure a device is actively playing."
     
     playlists = spotify_utils.get_playlists(access_token)
-    return render(response, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists, "server_msg": server_msg})
+    return render(request, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists, "server_msg": server_msg})
