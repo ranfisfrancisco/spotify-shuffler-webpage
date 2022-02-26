@@ -1,0 +1,14 @@
+
+.login-page {
+	background-image: url('../images/city.jpg');
+	background-color: black;
+	color: white;
+	padding-bottom: 600px;
+}
+
+.welcome-content{
+	width:100%;
+	position: relative;
+	display: inline-block;
+	text-align: center;    
+}

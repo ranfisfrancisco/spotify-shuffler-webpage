@@ -1,5 +1,15 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
+{% block headcontent %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"> 
+{% endblock %}
 
 {% block content %}
-<a href="/login" class="btn btn-primary">Log in with Spotify</a>
+    <div class ="login-page">
+        <div id="welcome-content" class="welcome-content">
+            <h1> Smart Shuffler </h1>
+            <a href="/login" class="btn btn-primary">Log in with Spotify</a>
+        </div>
+    </div>
 {% endblock %}
