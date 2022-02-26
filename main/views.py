@@ -49,7 +49,7 @@ def callback(request):
     access_token = json["access_token"]
     refresh_token = json["refresh_token"]
 
-    response = redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
+    response = redirect(f'/select')
     response.set_cookie('access_token', access_token)
     response.set_cookie('refresh_token', refresh_token)
 
@@ -82,18 +82,20 @@ def select(request):
     if not "access_token" in request.COOKIES or not "refresh_token" in request.COOKIES:
         return redirect('login')
 
-    access_token = request.GET["access_token"]
-    refresh_token = request.GET["refresh_token"]
+    access_token = request.COOKIES["access_token"]
+    refresh_token = request.COOKIES["refresh_token"]
     server_msg = ""
 
     if "selected_playlists" in request.POST and "queue_limit" in request.POST:
+        default_queue_limit = 20
         selected_playlists = request.POST.getlist("selected_playlists")
         queue_limit = request.POST["queue_limit"]
 
         # TODO: HANDLE
-        queue_limit = int(queue_limit)
-        if queue_limit == 0:
-            queue_limit = float("inf")
+        if queue_limit.isnumeric():
+            queue_limit = int(queue_limit)
+        else:
+            queue_limit = default_queue_limit
 
         tracks = []
 
