@@ -24,7 +24,7 @@ def login_request(request):
 
 def callback(request):
     if not "code" in request.GET:
-        return index(request)
+        return redirect('/')
 
     load_dotenv()
 
@@ -56,7 +56,10 @@ def callback(request):
     return response
 
 def refresh_token_request(request):
-    refresh_token = request.GET["refresh_token"]
+    if "refresh_token" not in request.COOKIES:
+        return redirect('/')
+
+    refresh_token = request.COOKIES["refresh_token"]
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
 
@@ -75,12 +78,15 @@ def refresh_token_request(request):
 
     access_token = json["access_token"]
 
-    return redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
+    response = redirect('/select')
+    response.set_cookie('access_token', access_token)
+
+    return response
 
 
 def select(request):
     if not "access_token" in request.COOKIES or not "refresh_token" in request.COOKIES:
-        return redirect('login')
+        return redirect('/login')
 
     access_token = request.COOKIES["access_token"]
     refresh_token = request.COOKIES["refresh_token"]
@@ -99,8 +105,11 @@ def select(request):
 
         tracks = []
 
-        for playlist_id in selected_playlists:
-            tracks.extend(spotify_utils.get_tracks_from_playlist(access_token, playlist_id))
+        try:
+            for playlist_id in selected_playlists:
+                tracks.extend(spotify_utils.get_tracks_from_playlist(access_token, playlist_id))
+        except:
+            return redirect('/refresh_token')
 
         # Remove Duplicate Tracks based on URI
         tracks = list({ track_data['track']['uri'] : track_data for track_data in tracks }.values())
@@ -110,10 +119,14 @@ def select(request):
         shuffled_queue = shuffler.Shuffler.shuffle(tracks, recent_tracks)
 
         try:
-            spotify_utils.queue_tracks(access_token, shuffled_queue, queue_limit)
+            spotify_utils.queue_tracks("access_token", shuffled_queue, queue_limit)
             server_msg = "Success!"
         except spotipy.exceptions.SpotifyException:
             server_msg = "ERROR: Please make sure a device is actively playing."
     
-    playlists = spotify_utils.get_playlists(access_token)
+    playlists=[]
+    try:
+        playlists = spotify_utils.get_playlists(access_token)
+    except:
+        return redirect('/refresh_token')
     return render(request, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists, "server_msg": server_msg})
