@@ -2,6 +2,7 @@
 	background-image: url('../images/city.jpg');
 	background-color: black;
 	background-repeat: no-repeat;
+	background-size: cover;
 	color: white;
 	height: 100%; 
 	text-align: center;  
@@ -24,6 +25,7 @@
 	background-image: url('../images/city.jpg');
 	background-color: black;
 	background-repeat: no-repeat;
+	background-size: cover;
 	color: white;
 	height: 100%; 
 	text-align: center;  
