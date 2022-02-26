@@ -15,7 +15,7 @@ from . import shuffler
 def index(request):
     return render(request, "main/login.html", {})
 
-def login(request):
+def login_request(request):
     load_dotenv()
     scope = 'user-library-read user-read-recently-played playlist-read-private streaming'
     url_scope = "%20".join(scope.split())
@@ -49,7 +49,11 @@ def callback(request):
     access_token = json["access_token"]
     refresh_token = json["refresh_token"]
 
-    return redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
+    response = redirect(f'/select?access_token={access_token}&refresh_token={refresh_token}')
+    response.set_cookie('access_token', access_token)
+    response.set_cookie('refresh_token', refresh_token)
+
+    return response
 
 def refresh_token_request(request):
     refresh_token = request.GET["refresh_token"]
@@ -75,7 +79,7 @@ def refresh_token_request(request):
 
 
 def select(request):
-    if not "access_token" in request.GET or not "refresh_token" in request.GET:
+    if not "access_token" in request.COOKIES or not "refresh_token" in request.COOKIES:
         return redirect('login')
 
     access_token = request.GET["access_token"]
