@@ -24,7 +24,7 @@
             </div>
 
             <div class="submit-button">
-                <button type="button" name="" onclick="clickButton();">Queue</button>
+                <button type="button" onclick="clickButton()">Queue</button>
             </div>
         </form>
         <p id="msg" name="msg"></p>
@@ -32,30 +32,32 @@
     </div>
 </div>  
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     function clickButton(){
         var selected_playlists=document.getElementById('selected_playlists').value;
         var queue_limit=document.getElementById('queue_limit').value;
+        console.log("Start")
 
         $.ajax({
             type:"post",
             url:"select",
-            headers:{
-                'CSRFToken' : getCSRFTokenValue()
-            },
             data: 
             {  
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
                 'selected_playlists' : selected_playlists,
                 'queue_limit' : queue_limit,
             },
             cache:false,
             success: function (html) 
             {
+                console.log("Success");
                 $('#msg').html(html);
+            },
+            error: function(){
+                console.log(response.responseJSON.errors);
             }
         });
-        return false;
     }
 </script>
 {% endblock %}
