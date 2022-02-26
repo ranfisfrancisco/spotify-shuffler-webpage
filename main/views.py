@@ -129,4 +129,6 @@ def select(request):
         playlists = spotify_utils.get_playlists(access_token)
     except:
         return redirect('/refresh_token')
-    return render(request, "main/select.html", {"access_token" : access_token, "refresh_token" : refresh_token, "playlists": playlists, "server_msg": server_msg})
+
+    response = render(request, "main/select.html", {"playlists": playlists, "server_msg": server_msg})
+    return response
