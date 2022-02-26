@@ -9,7 +9,7 @@
 <div class="select-page">
     <div class="form">
     <h1>Select Playlists</h1>
-        <form action="" id="task-form" method="post">
+        <form action="/select" id="task-form" method="post">
             <div class="select-box">
                 {% csrf_token %}
                 <select name="selected_playlists" id="selected_playlists" multiple>
@@ -24,11 +24,23 @@
             </div>
 
             <div class="submit-button">
-                <button type="submit">Queue!</button>
+                <button type="submit">Queue</button>
             </div>
         </form>
         <h1>{{server_msg}}</h1>
         </div>
     </div>
 </div>  
+
+<script>
+    jQuery(document).ready(function()
+{
+document.getElementById("submit-button").addEventListener("click", function(event)
+{
+    event.preventDefault()
+    alert("You must select at least one class.");
+    console.log("CLICKED")
+});
+});
+</script>
 {% endblock %}

@@ -119,7 +119,7 @@ def select(request):
         shuffled_queue = shuffler.Shuffler.shuffle(tracks, recent_tracks)
 
         try:
-            spotify_utils.queue_tracks("access_token", shuffled_queue, queue_limit)
+            spotify_utils.queue_tracks(access_token, shuffled_queue, queue_limit)
             server_msg = "Success!"
         except spotipy.exceptions.SpotifyException:
             server_msg = "ERROR: Please make sure a device is actively playing."
