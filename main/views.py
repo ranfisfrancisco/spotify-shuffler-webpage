@@ -93,6 +93,7 @@ def select(request):
     server_msg = ""
 
     if "selected_playlists" in request.POST and "queue_limit" in request.POST:
+        print("---POST REQUEST", request.POST)
         default_queue_limit = 20
         selected_playlists = request.POST.getlist("selected_playlists")
         queue_limit = request.POST["queue_limit"]
@@ -123,6 +124,8 @@ def select(request):
             server_msg = "Success!"
         except spotipy.exceptions.SpotifyException:
             server_msg = "ERROR: Please make sure a device is actively playing."
+
+        return HttpResponse("wow!")
     
     playlists=[]
     try:
