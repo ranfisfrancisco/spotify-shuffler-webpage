@@ -2,13 +2,21 @@
 .login-page {
 	background-image: url('../images/city.jpg');
 	background-color: black;
+	background-repeat: no-repeat;
 	color: white;
-	padding-bottom: 600px;
+	height: 100%; 
+	text-align: center;  
 }
 
 .welcome-content{
-	width:100%;
 	position: relative;
 	display: inline-block;
 	text-align: center;    
+	border: 15px solid green;
+	background-color: black;
+  	padding: 50px;
+}
+
+.welcome-content h1 {
+	font-size: 100px;
 }

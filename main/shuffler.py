@@ -9,7 +9,7 @@ class Shuffler:
 
     @staticmethod
     def shuffle(song_list: List, recently_played: List,
-     no_double_artist=False, no_double_album=False, debug=False) -> List:
+     no_double_artist=True, no_double_album=False, debug=False) -> List:
         '''Shuffle list of songs weighed against what was recently played
          with several optional modifications.
 
