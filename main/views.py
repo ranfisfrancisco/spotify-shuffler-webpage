@@ -93,7 +93,6 @@ def select(request):
     server_msg = ""
 
     if "selected_playlists" in request.POST and "queue_limit" in request.POST:
-        print("---POST REQUEST", request.POST)
         default_queue_limit = 20
         selected_playlists = request.POST.getlist("selected_playlists")
         queue_limit = request.POST["queue_limit"]
@@ -121,11 +120,9 @@ def select(request):
 
         try:
             spotify_utils.queue_tracks(access_token, shuffled_queue, queue_limit)
-            server_msg = "Success!"
+            return HttpResponse("Success!")
         except spotipy.exceptions.SpotifyException:
-            server_msg = "ERROR: Please make sure a device is actively playing."
-
-        return HttpResponse("wow!")
+            return HttpResponse("ERROR: Please make sure a device is actively playing.")
     
     playlists=[]
     try:
@@ -133,5 +130,5 @@ def select(request):
     except:
         return redirect('/refresh_token')
 
-    response = render(request, "main/select.html", {"playlists": playlists, "server_msg": server_msg})
+    response = render(request, "main/select.html", {"playlists": playlists})
     return response

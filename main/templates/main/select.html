@@ -38,6 +38,7 @@
         var selected_playlists=document.getElementById('selected_playlists').value;
         var queue_limit=document.getElementById('queue_limit').value;
         console.log("Start")
+        $('#msg').html("Queuing...");
 
         $.ajax({
             type:"post",
@@ -54,7 +55,7 @@
                 console.log("Success");
                 $('#msg').html(html);
             },
-            error: function(){
+            error: function(response){
                 console.log(response.responseJSON.errors);
             }
         });
