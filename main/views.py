@@ -80,7 +80,7 @@ def select(response):
 
     access_token = response.GET["access_token"]
     refresh_token = response.GET["refresh_token"]
-    server_msg = "TEST"
+    server_msg = ""
 
     if "selected_playlists" in response.POST and "queue_limit" in response.POST:
         selected_playlists = response.POST.getlist("selected_playlists")

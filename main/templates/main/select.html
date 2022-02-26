@@ -1,5 +1,7 @@
-<body>
-    <h1>Select Playlists</h1>
+{% extends 'main/base.html' %}
+
+{% block content %}
+<h1>Select Playlists</h1>
 
     <form action="" id="task-form" method="post">
         {% csrf_token %}
@@ -13,7 +15,5 @@
 
         <button type="submit">Queue!</button>
     </form>
-
-    <h1>{{server_msg}}</h1>
-    
-</body>
+<h1>{{server_msg}}</h1>
+{% endblock %}

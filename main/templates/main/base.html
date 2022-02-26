@@ -1,7 +1,16 @@
 <html>
 <head>
-    <title>Spotify Shuffler</title>
+    <title>{% block title %} Smart Shuffler {% endblock %}</title>
+    
+    <link rel="shortcut icon" href="https://media.geeksforgeeks.org/wp-content/cdn-uploads/gfg_200X200.png" type="image/x-icon">
 </head>
+
+<body>
+    <div id="content" name="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
 
 <footer>
    
