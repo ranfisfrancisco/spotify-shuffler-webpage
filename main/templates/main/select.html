@@ -1,20 +1,35 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
+{% block headcontent %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"> 
+{% endblock %}
+
 {% block content %}
-<h1>Select Playlists</h1>
+<div class="select-page">
+    <div class="form">
+    <h1>Select Playlists</h1>
+        <form action="" id="task-form" method="post">
+            <div class="select-box">
+                {% csrf_token %}
+                <select name="selected_playlists" id="selected_playlists" multiple>
+                    {% for playlist in playlists%}
+                        <option value={{playlist.id}}>{{playlist.name}}</option>
+                    {% endfor %}  
+                </select>
+            </div>
 
-    <form action="" id="task-form" method="post">
-        {% csrf_token %}
-        <select name="selected_playlists" id="selected_playlists" multiple>
-            {% for playlist in playlists%}
-                <option value={{playlist.id}}>{{playlist.name}}</option>
-            {% endfor %}  
-        </select>
+            <div class="queue-box">
+                <input type="number" id="queue_limit" name="queue_limit"> 
+            </div>
 
-        <input type="number" id="queue_limit" name="queue_limit"> 
-
-        <button type="submit">Queue!</button>
-    </form>
-<h1>{{server_msg}}</h1>
+            <div class="submit-button">
+                <button type="submit">Queue!</button>
+            </div>
+        </form>
+        </div>
+    
+    <h1>{{server_msg}}</h1>
+    </div>
+</div>  
 {% endblock %}

@@ -20,3 +20,21 @@
 .welcome-content h1 {
 	font-size: 100px;
 }
+
+.select-page {
+	background-image: url('../images/city.jpg');
+	background-color: black;
+	background-repeat: no-repeat;
+	color: white;
+	height: 100%; 
+	text-align: center;  
+}
+
+.form{
+	position: relative;
+	display: inline-block;
+	text-align: center;    
+	border: 15px solid green;
+	background-color: black;
+  	padding: 50px;
+}
