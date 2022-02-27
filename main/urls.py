@@ -7,4 +7,5 @@ urlpatterns = [
     path("callback", views.callback, name="callback"),
     path("select", views.select, name="select"),
     path("refresh_token", views.refresh_token_request, name="refresh_token_request"),
+    path("queue", views.queue, name="queue"),
 ]

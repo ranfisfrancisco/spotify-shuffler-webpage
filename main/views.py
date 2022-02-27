@@ -89,38 +89,6 @@ def select(request):
 
     access_token = request.COOKIES["access_token"]
     refresh_token = request.COOKIES["refresh_token"]
-
-    if "selected_playlists" in request.POST and "queue_limit" in request.POST:
-        default_queue_limit = 20
-        selected_playlists = request.POST.getlist("selected_playlists")
-        queue_limit = request.POST["queue_limit"]
-
-        # TODO: HANDLE
-        if queue_limit.isnumeric():
-            queue_limit = int(queue_limit)
-        else:
-            queue_limit = default_queue_limit
-
-        tracks = []
-
-        try:
-            for playlist_id in selected_playlists:
-                tracks.extend(spotify_utils.get_tracks_from_playlist(access_token, playlist_id))
-        except:
-            return redirect('/refresh_token')
-
-        # Remove Duplicate Tracks based on URI
-        tracks = list({ track_data['track']['uri'] : track_data for track_data in tracks }.values())
-
-        recent_tracks = spotify_utils.get_recently_played(access_token)
-
-        shuffled_queue = shuffler.Shuffler.shuffle(tracks, recent_tracks)
-
-        try:
-            spotify_utils.queue_tracks(access_token, shuffled_queue, queue_limit)
-            return HttpResponse("Success!")
-        except spotipy.exceptions.SpotifyException:
-            return HttpResponse("ERROR: Please make sure a device is actively playing.")
     
     playlists=[]
     try:
@@ -130,3 +98,42 @@ def select(request):
 
     response = render(request, "main/select.html", {"playlists": playlists})
     return response
+
+def queue(request):
+    if not "access_token" in request.COOKIES or not "refresh_token" in request.COOKIES:
+        return
+
+    if "selected_playlists" not in request.POST or "queue_limit" not in request.POST:
+        return 
+
+    access_token = request.COOKIES["access_token"]
+    default_queue_limit = 20
+    selected_playlists = request.POST.getlist("selected_playlists")
+    queue_limit = request.POST["queue_limit"]
+
+    # TODO: HANDLE
+    if queue_limit.isnumeric():
+        queue_limit = int(queue_limit)
+    else:
+        queue_limit = default_queue_limit
+
+    tracks = []
+
+    try:
+        for playlist_id in selected_playlists:
+            tracks.extend(spotify_utils.get_tracks_from_playlist(access_token, playlist_id))
+    except:
+        return redirect('/refresh_token')
+
+    # Remove Duplicate Tracks based on URI
+    tracks = list({ track_data['track']['uri'] : track_data for track_data in tracks }.values())
+
+    recent_tracks = spotify_utils.get_recently_played(access_token)
+
+    shuffled_queue = shuffler.Shuffler.shuffle(tracks, recent_tracks)
+
+    try:
+        spotify_utils.queue_tracks(access_token, shuffled_queue, queue_limit)
+        return HttpResponse("Success!")
+    except spotipy.exceptions.SpotifyException:
+        return HttpResponse("ERROR: Please make sure a device is actively playing.")
