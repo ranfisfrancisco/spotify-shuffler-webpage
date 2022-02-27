@@ -99,19 +99,20 @@ def select(request):
     response = render(request, "main/select.html", {"playlists": playlists})
     return response
 
+
 def queue(request):
     if not "access_token" in request.COOKIES or not "refresh_token" in request.COOKIES:
         return
 
-    if "selected_playlists" not in request.POST or "queue_limit" not in request.POST:
+    # I have no idea why it the HTML page appends [] to the name!
+    if "selected_playlists[]" not in request.POST or "queue_limit" not in request.POST:
         return 
 
     access_token = request.COOKIES["access_token"]
     default_queue_limit = 20
-    selected_playlists = request.POST.getlist("selected_playlists")
+    selected_playlists = request.POST.getlist("selected_playlists[]")
     queue_limit = request.POST["queue_limit"]
 
-    # TODO: HANDLE
     if queue_limit.isnumeric():
         queue_limit = int(queue_limit)
     else:

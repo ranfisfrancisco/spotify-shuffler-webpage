@@ -41,14 +41,19 @@
     }
 
     function clickButton(){
-        var selected_playlists=document.getElementById('selected_playlists').value;
+        var selected_playlists=[]
+        for (var option of document.getElementById('selected_playlists').options) {
+            if (option.selected) {
+                selected_playlists.push(option.value);
+            }
+        }
         var queue_limit=document.getElementById('queue_limit').value;
-        console.log("Start")
+
         $('#msg').html("Queuing...");
 
         $.ajax({
-            type:"post",
-            url:"queue",
+            type: "post",
+            url: "queue",
             data: 
             {  
                 'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
@@ -56,12 +61,14 @@
                 'queue_limit' : queue_limit,
             },
             cache:false,
-            success: function (html) 
+            success: function (response) 
             {
-                $('#msg').html("Success!");
+                $('#msg').html(response);
+                console.log(response);
             },
             error: function(response){
-                console.log(response.responseJSON.errors);
+                $('#msg').html("Error!");
+                console.log(response);
             }
         });
     }
