@@ -10,13 +10,13 @@ import spotipy
 from . import spotify_utils
 from . import shuffler
 
+load_dotenv()
 # Create your views here.
 
 def index(request):
     return render(request, "main/login.html", {})
 
 def login_request(request):
-    load_dotenv()
     scope = 'user-library-read user-read-recently-played playlist-read-private streaming'
     url_scope = "%20".join(scope.split())
 
@@ -25,8 +25,6 @@ def login_request(request):
 def callback(request):
     if not "code" in request.GET:
         return redirect('/')
-
-    load_dotenv()
 
     code = request.GET["code"]
     client_id = os.getenv("CLIENT_ID")
@@ -67,9 +65,10 @@ def refresh_token_request(request):
         six.text_type(client_id + ":" + client_secret).encode("ascii")
     )
     auth_header = {"Authorization": "Basic %s" % auth_header.decode("ascii")}
-        
+    
     r = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type' : 'refresh_token', "refresh_token": refresh_token},
         headers=auth_header)
+
 
     if r.status_code != 200:
         return redirect('/')
@@ -90,7 +89,6 @@ def select(request):
 
     access_token = request.COOKIES["access_token"]
     refresh_token = request.COOKIES["refresh_token"]
-    server_msg = ""
 
     if "selected_playlists" in request.POST and "queue_limit" in request.POST:
         default_queue_limit = 20
