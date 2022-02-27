@@ -47,3 +47,8 @@
 .submit-button{
 	margin-top: 10%;
 }
+
+.queue-input, .queue-label {
+	float: left;
+	clear: left;
+}

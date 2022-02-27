@@ -20,8 +20,14 @@
             </div>
 
             <div class="queue-box">
-                <label for="queue_limit" id="queue_label" name="queue_label">Number of Songs to Queue  </label>
-                <input type="range" id="queue_limit" name="queue_limit" min="1" max="50" onchange="changeHandler()">
+                <div class="queue-input">
+                    <input type="range" id="queue_limit" name="queue_limit" min="1" max="50" onchange="changeHandler()">
+                </div>
+                
+                <div class="queue-label">
+                    <label for="queue_limit" id="queue_label" name="queue_label"></label>
+                </div>
+                
             </div>
 
             <div class="submit-button">
@@ -35,7 +41,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
-
+    changeHandler();
     function changeHandler(){
         document.getElementById("queue_label").innerHTML = "Queuing " + document.getElementById('queue_limit').value + " songs.";
     }
