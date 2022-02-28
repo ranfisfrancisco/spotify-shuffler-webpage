@@ -1,6 +1,6 @@
 """Shuffler Module"""
 from typing import List
-from random import randint
+import random
 import math
 import logging
 
@@ -8,8 +8,52 @@ class Shuffler:
     '''Utility class containing methods to shuffle list of Spotify track API objects'''
 
     @staticmethod
-    def shuffle(song_list: List, recently_played: List,
-     no_double_artist=True, no_double_album=False, debug=False) -> List:
+    def shuffle_multiple_playlists(playlists: List, recently_played: List, queue_limit=20,
+     no_double_artist=False, no_double_album=False, debug=False) -> List:
+        '''Shuffle songs from different playlists weighed against what was recently played
+         with several optional modifications.
+
+        recently_played -- list of tracks obtained from the Spotify API
+         that have been played recently
+
+        no_double_artist -- flag that suggests shuffler should avoid playing
+         the same artist back to back. (default: False)
+
+        no_double_album -- flag that suggests shuffler should avoid playing
+         the same album back to back. (default: False)
+
+        debug -- flag that writes the shuffled queue to queue.log file'''
+     
+        queue = []
+        bag_factor = 2 # Put this many songs from each playlist into a bag and select them at random
+
+        for i in range(len(playlists)):
+            playlists[i] = Shuffler.shuffle_single_playlist(playlists[i], recently_played, no_double_artist=no_double_artist,
+                no_double_album=no_double_album, debug=debug)
+
+        while len(queue) < queue_limit and sum([len(x) for x in playlists]) > 0:
+            rand_index = []
+
+            for _ in range(bag_factor):
+                 rand_index.extend([i for i in range(len(playlists))])
+           
+            random.shuffle(rand_index)
+
+            for i in rand_index:
+                if len(playlists[i]) > 0:
+                    queue.append(playlists[i].pop(0))
+
+                if len(queue) >= queue_limit:
+                    break
+
+        # Remove Duplicate Tracks based on URI
+        queue = list({ track_data['track']['uri'] : track_data for track_data in queue }.values())
+
+        return queue
+    
+    @staticmethod
+    def shuffle_single_playlist(song_list: List, recently_played: List,
+     no_double_artist=False, no_double_album=False, debug=False) -> List:
         '''Shuffle list of songs weighed against what was recently played
          with several optional modifications.
 
@@ -46,7 +90,7 @@ class Shuffler:
             queue = Shuffler.filter_double_album(queue)
 
         if debug:
-            with open('queue.log', 'w',encoding='utf-8') as file:
+            with open('queue.log', 'a',encoding='utf-8') as file:
                 file.write('Recently Played | Song | Artist\n')
                 for queue_track in queue:
                     recency_index =  queue_track['recently_played']
@@ -114,7 +158,7 @@ class Shuffler:
             logging.warning('Recent Index should never be 0!')
             return 0
 
-        bias = -250 * math.tanh(5/recent_idx) + randint(0, 100)
+        bias = -250 * math.tanh(5/recent_idx) + random.randint(0, 100)
 
         return min(bias, 0)
 
@@ -125,7 +169,7 @@ class Shuffler:
         song_dict -- dictionary of {'song': json track data, 'score': integer denoting score,
          'recently_played': integer denoting how recently it was played}. Default None.'''
 
-        return randint(0, 1000)
+        return random.randint(0, 1000)
 
     @staticmethod
     def get_score(song_dict):

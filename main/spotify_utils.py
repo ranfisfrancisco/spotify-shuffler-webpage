@@ -65,7 +65,7 @@ def get_tracks_from_playlist(access_token, playlist_id):
 
     return playlist_tracks
 
-def queue_tracks(access_token, tracks, queue_limit):
+def queue_tracks(access_token, tracks, queue_limit=None):
     spotify_conn = spotipy.Spotify(auth=access_token)
 
     for idx, track in enumerate(tracks):

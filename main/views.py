@@ -118,23 +118,24 @@ def queue(request):
     else:
         queue_limit = default_queue_limit
 
-    tracks = []
+    playlists_tracks = []
 
     try:
         for playlist_id in selected_playlists:
-            tracks.extend(spotify_utils.get_tracks_from_playlist(access_token, playlist_id))
+            tracks = spotify_utils.get_tracks_from_playlist(access_token, playlist_id)
+            # Remove Duplicate Tracks based on URI
+            # tracks = list({ track_data['track']['uri'] : track_data for track_data in tracks }.values())
+            playlists_tracks.append(tracks)
     except:
         return redirect('/refresh_token')
 
-    # Remove Duplicate Tracks based on URI
-    tracks = list({ track_data['track']['uri'] : track_data for track_data in tracks }.values())
-
     recent_tracks = spotify_utils.get_recently_played(access_token)
 
-    shuffled_queue = shuffler.Shuffler.shuffle(tracks, recent_tracks)
+    shuffled_queue = shuffler.Shuffler.shuffle_multiple_playlists(playlists_tracks, recent_tracks, queue_limit=queue_limit,
+    no_double_artist=True)
 
     try:
-        spotify_utils.queue_tracks(access_token, shuffled_queue, queue_limit)
+        spotify_utils.queue_tracks(access_token, shuffled_queue)
         return HttpResponse("Success!")
     except spotipy.exceptions.SpotifyException:
         return HttpResponse("ERROR: Please make sure a device is actively playing.")
