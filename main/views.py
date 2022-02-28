@@ -36,13 +36,13 @@ def callback(request):
     )
     auth_header = {"Authorization": "Basic %s" % auth_header.decode("ascii")}
 
-    r = requests.post('https://accounts.spotify.com/api/token', data = {'code':code, 'redirect_uri': redirect_uri, 'grant_type': 'authorization_code'},
+    token_request = requests.post('https://accounts.spotify.com/api/token', data = {'code':code, 'redirect_uri': redirect_uri, 'grant_type': 'authorization_code'},
         headers=auth_header)
 
-    if r.status_code != 200:
+    if token_request.status_code != 200:
         return redirect('/')
     
-    json = r.json()
+    json = token_request.json()
 
     access_token = json["access_token"]
     refresh_token = json["refresh_token"]
@@ -66,14 +66,14 @@ def refresh_token_request(request):
     )
     auth_header = {"Authorization": "Basic %s" % auth_header.decode("ascii")}
     
-    r = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type' : 'refresh_token', "refresh_token": refresh_token},
+    refresh_request = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type' : 'refresh_token', "refresh_token": refresh_token},
         headers=auth_header)
 
 
-    if r.status_code != 200:
+    if refresh_request.status_code != 200:
         return redirect('/')
 
-    json = r.json()
+    json = refresh_request.json()
 
     access_token = json["access_token"]
 
