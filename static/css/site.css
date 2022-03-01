@@ -52,3 +52,14 @@
 	float: left;
 	clear: left;
 }
+
+.base-footer{
+	text-align: center;
+	background-color: black;
+}
+
+.footer-text{
+	color: white
+}
+
+footer {height:110px;}
