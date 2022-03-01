@@ -90,14 +90,7 @@ class Shuffler:
             queue = Shuffler.filter_double_album(queue)
 
         if debug:
-            with open('queue.log', 'a',encoding='utf-8') as file:
-                file.write('Recently Played | Song | Artist\n')
-                for queue_track in queue:
-                    recency_index =  queue_track['recently_played']
-                    if recency_index is None:
-                        recency_index = "NA"
-                    file.write(f'{recency_index} | {queue_track["song"]["track"]["name"]} |\
- {queue_track["song"]["track"]["artists"][0]["name"]} \n')
+            Shuffler.log(queue, recently_played)
 
         return [x['song'] for x in queue]
 
@@ -186,3 +179,20 @@ class Shuffler:
         score += Shuffler.get_random()
 
         return score
+
+    @staticmethod
+    def log(queue, recently_played):
+        with open('queue.log', 'a',encoding='utf-8') as file:
+                file.write('-' * 15)
+                file.write('\nRECENTLY PLAYED TRACKS\n')
+                for idx, track in enumerate(recently_played):
+                   file.write(f'{idx+1} | {track["track"]["name"]}\n')
+
+                file.write("\nSHUFFLED LIST\n")
+                file.write('Index | Recently Played | Song | Artist\n')
+                for idx, queue_track in enumerate(queue):
+                    recency_index =  queue_track['recently_played']
+                    if recency_index is None:
+                        recency_index = "NA"
+                    file.write(f'{idx} | {recency_index} | {queue_track["song"]["track"]["name"]} |\
+ {queue_track["song"]["track"]["artists"][0]["name"]} \n')
