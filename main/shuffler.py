@@ -151,7 +151,7 @@ class Shuffler:
             logging.warning('Recent Index should never be 0!')
             return 0
 
-        bias = -250 * math.tanh(5/recent_idx) + random.randint(0, 100)
+        bias = -500 * math.tanh(20/recent_idx)
 
         return min(bias, 0)
 
