@@ -35,7 +35,7 @@ class Shuffler:
             rand_index = []
 
             for _ in range(bag_factor):
-                rand_index.extend(*range(0, len(playlists)))
+                rand_index.extend([*range(0, len(playlists))])
 
             random.shuffle(rand_index)
 
