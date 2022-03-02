@@ -1,3 +1,5 @@
+'''Helper functions to interact with the Spotify API.'''
+
 import spotipy
 
 def get_playlists(access_token):
@@ -7,7 +9,8 @@ def get_playlists(access_token):
 
     Arguments:
 
-    spotify_conn - spotipy.Spotify object authenticated with user"""
+    access_token -- access token obtained from authenticating with Spotify after a user logs in."""
+
     playlists = []
     offset = 0
     offset_difference = 50
@@ -40,9 +43,9 @@ def get_tracks_from_playlist(access_token, playlist_id):
 
     Arguments:
 
-    spotify_conn -- spotipy.Spotify object authenticated with a user
+    access_token -- access token obtained from authenticating with Spotify after a user logs in.
 
-    playlist_id -- dictionary object of data from Spotify API for a particular playlist"""
+    playlist_id -- spotify id of the playlist to get the songs from"""
 
     playlist_tracks = []
     offset = 0
@@ -66,6 +69,14 @@ def get_tracks_from_playlist(access_token, playlist_id):
     return playlist_tracks
 
 def queue_tracks(access_token, tracks, queue_limit=None):
+    '''Queues tracks.
+
+    access_token -- access token obtained from authenticating with Spotify after a user logs in.
+
+    tracks -- list of Spotify API track objects.
+
+    queue_limit -- Specifies how many tracks to add. Will add all of them if unspecified.'''
+
     spotify_conn = spotipy.Spotify(auth=access_token)
 
     for idx, track in enumerate(tracks):
@@ -74,6 +85,11 @@ def queue_tracks(access_token, tracks, queue_limit=None):
             break
 
 def get_recently_played(access_token):
+    '''Get a user's recently played tracks.
+
+    access_token -- access token obtained from authenticating with Spotify after a user logs in.
+    It is associated with the logged-in user.'''
+
     spotify_conn = spotipy.Spotify(auth=access_token)
     results = spotify_conn.current_user_recently_played(limit=50)
     recent_track_list = results['items']
