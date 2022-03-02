@@ -23,20 +23,20 @@ class Shuffler:
          the same album back to back. (default: False)
 
         debug -- flag that writes the shuffled queue to queue.log file'''
-     
+
         queue = []
         bag_factor = 2 # Put this many songs from each playlist into a bag and select them at random
 
-        for i in range(len(playlists)):
-            playlists[i] = Shuffler.shuffle_single_playlist(playlists[i], recently_played, no_double_artist=no_double_artist,
-                no_double_album=no_double_album, debug=debug)
+        for i, _ in enumerate(playlists):
+            playlists[i] = Shuffler.shuffle_single_playlist(playlists[i], recently_played,
+                no_double_artist=no_double_artist, no_double_album=no_double_album, debug=debug)
 
         while len(queue) < queue_limit and sum([len(x) for x in playlists]) > 0:
             rand_index = []
 
             for _ in range(bag_factor):
-                 rand_index.extend([i for i in range(len(playlists))])
-           
+                rand_index.extend(*range(0, len(playlists)))
+
             random.shuffle(rand_index)
 
             for i in rand_index:
@@ -50,7 +50,7 @@ class Shuffler:
         queue = list({ track_data['track']['uri'] : track_data for track_data in queue }.values())
 
         return queue
-    
+
     @staticmethod
     def shuffle_single_playlist(song_list: List, recently_played: List,
      no_double_artist=False, no_double_album=False, debug=False) -> List:
@@ -181,18 +181,21 @@ class Shuffler:
         return score
 
     @staticmethod
-    def log(queue, recently_played):
-        with open('queue.log', 'a',encoding='utf-8') as file:
-                file.write('-' * 15)
-                file.write('\nRECENTLY PLAYED TRACKS\n')
-                for idx, track in enumerate(recently_played):
-                   file.write(f'{idx+1} | {track["track"]["name"]}\n')
+    def log(queue, recently_played, filename='queue.log'):
+        '''Log the queue and recently played tracks to a file.'''
 
-                file.write("\nSHUFFLED LIST\n")
-                file.write('Index | Recently Played | Song | Artist\n')
-                for idx, queue_track in enumerate(queue):
-                    recency_index =  queue_track['recently_played']
-                    if recency_index is None:
-                        recency_index = "NA"
-                    file.write(f'{idx} | {recency_index} | {queue_track["song"]["track"]["name"]} |\
- {queue_track["song"]["track"]["artists"][0]["name"]} \n')
+        with open(filename, 'a',encoding='utf-8') as file:
+            file.write('-' * 15)
+            file.write('\nRECENTLY PLAYED TRACKS\n')
+            for idx, track in enumerate(recently_played):
+                file.write(f'{idx+1} | {track["track"]["name"]}\n')
+
+            file.write("\nSHUFFLED LIST\n")
+            file.write('Index | Recently Played | Song | Artist\n')
+
+            for idx, queue_track in enumerate(queue):
+                recency_index =  queue_track['recently_played']
+                if recency_index is None:
+                    recency_index = "NA"
+                file.write(f'{idx} | {recency_index} | {queue_track["song"]["track"]["name"]} |\
+                {queue_track["song"]["track"]["artists"][0]["name"]} \n')
