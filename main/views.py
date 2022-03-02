@@ -145,7 +145,7 @@ def queue(request):
             tracks = spotify_utils.get_tracks_from_playlist(access_token, playlist_id)
             playlists_tracks.append(tracks)
     except:
-        return redirect('/refresh_token')
+        return HttpResponse("ERROR: Could not load playlists.")
 
     recent_tracks = spotify_utils.get_recently_played(access_token)
 
